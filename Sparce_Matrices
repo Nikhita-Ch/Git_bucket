@@ -1,0 +1,100 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define HASH_SIZE 30007        // Prime number
+
+// Define a structure to represent a merchant
+typedef struct Merchant {
+    int merchantId;
+    struct Merchant* next;
+} Merchant;
+
+// Define a structure to represent a node in the hash table
+typedef struct HashNode {
+    int pincode;
+    Merchant* merchants;
+    struct HashNode* next;
+} HashNode;
+
+// Define a hash table to store merchants by pincode
+HashNode* hashTable[HASH_SIZE];
+
+// Hash function
+int hash(int key) {
+    return key % HASH_SIZE;
+}
+
+// Function to add a merchant serving a pincode
+void addMerchant(int merchantId, int pincode) {
+    int index = hash(pincode);
+    HashNode* node = hashTable[index];
+
+    // Check if the pincode already exists in the hash table
+    while (node != NULL && node->pincode != pincode) {
+        node = node->next;
+    }
+
+    // If the pincode doesn't exist, create a new node
+    if (node == NULL) {
+        node = (HashNode*)malloc(sizeof(HashNode));
+        node->pincode = pincode;
+        node->merchants = NULL;
+        node->next = hashTable[index];
+        hashTable[index] = node;
+    }
+
+    // Add the merchant to the list of merchants serving the pincode
+    Merchant* newMerchant = (Merchant*)malloc(sizeof(Merchant));
+    newMerchant->merchantId = merchantId;
+    newMerchant->next = node->merchants;
+    node->merchants = newMerchant;
+}
+
+// Function to check serviceability for a given pincode
+void isServiceable(int pincode) {
+    int index = hash(pincode);
+    HashNode* node = hashTable[index];
+
+    // Search for the pincode in the hash table
+    while (node != NULL && node->pincode != pincode) {
+        node = node->next;
+    }
+
+    // If the pincode is found, print the merchants serving it
+    if (node != NULL) {
+        printf("Pincode %d is serviceable by the following merchants:\n", pincode);
+        Merchant* currentMerchant = node->merchants;
+        while (currentMerchant != NULL) {
+            printf("- Merchant %d\n", currentMerchant->merchantId);
+            currentMerchant = currentMerchant->next;
+        }
+    } else {
+        printf("Pincode %d is not serviceable\n", pincode);
+    }
+}
+
+int main() {
+    int merchantId, pincode;
+
+    // Example: Add merchants and their served pincodes
+    printf("Enter merchantId and pincode separated by space (Enter -1 -1 to stop):\n");
+    while (1) {
+        scanf("%d %d", &merchantId, &pincode);
+        if (merchantId == -1 && pincode == -1) {
+            break;
+        }
+        addMerchant(merchantId, pincode);
+    }
+
+    // Example: Search for serviceable pincodes
+    printf("Enter pincode to check serviceability (Enter -1 to stop):\n");
+    while (1) {
+        scanf("%d", &pincode);
+        if (pincode == -1) {
+            break;
+        }
+        isServiceable(pincode);
+    }
+
+    return 0;
+}
