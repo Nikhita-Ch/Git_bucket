@@ -1,7 +1,10 @@
-print("hello world!")
-a= 2
-b= "hi"
-# print(a+=1)
-print(a)
-print(f"hi {b} and {a}", sep='~')
-print(3)
+# Python program to print negative Numbers in given range
+
+start, end = -4, 19
+
+# iterating each number in list
+for num in range(start, end + 1):
+	
+	# checking condition
+	if num < 0:
+		print(num, end = " ")
