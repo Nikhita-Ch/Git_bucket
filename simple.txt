@@ -1,0 +1,2 @@
+This is a simple text file. This will be used to check 
+the most frequent word in this file.
